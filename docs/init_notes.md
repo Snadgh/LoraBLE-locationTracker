@@ -75,3 +75,10 @@ s173931 Sebastian Rydahl
 - nice discussion in the report regarding power - what happens over time power wise? 
 - 9V is bad choice. Too high voltage. Find lithium-ion rechargable maybe. 9V is made out of 1.5V batteries - not energy efficient. Primaries, 1.5V. Can we run it on 3V? Maybe not Lora - challenge.
 - Have look! Argue the choices in the report, both ideal and non-ideal choices
+
+# Thu Mar 21 - after lecture
+
+- BLE for local
+- WiFi scanning 
+- Two different types of uplinks
+- Wake up the device, shortly activate the BLE
