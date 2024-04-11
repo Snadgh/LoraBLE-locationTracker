@@ -38,3 +38,11 @@
 - Microsoft Azure often used as backend
 - IoT Prototyping used something else
 - Helium sends stuff to Azure
+
+## Class 11 April
+
+- Martin suggests an app: for example to use the Blynk.io thing we used previously
+- The app would be to help us get into the building, when we are there, the close approximity is needed with the led's 
+- what kind of packages - what sort of format - how can we cut the packages, what if we find only two wifi points, will the rest be just dummy data?
+- room for enclosure
+- energy optimization and battery consumption properly, otherwise it becomes a pretty easy task
