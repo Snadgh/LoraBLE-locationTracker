@@ -20,7 +20,7 @@ Temporarily using RN2483 module until using the LoraWAN microcontroller.
 
 Using appropriate jumper wires to connect the two.
 
-## Initial setup
+## Initial setup RN2483
 
 - Add the board manager to `~/.arduino15/arduino-cli.yaml`:
 
@@ -65,7 +65,9 @@ Examples for library RN2xx3 Arduino Library
 - Connect the hardware if not done already (*NOTE:* Make sure the antenna is connected before applying voltage to the board) 
 
 
-## Connecting to Helium
+## Connecting to Helium using RN2483
+
+- code directory: `rn2483-lora-helium`
 
 - Use the edited script from lecture 5: `ESP8266-RN2483-basic.ino`
 
@@ -113,8 +115,10 @@ Unable to join. Are your keys correct, and do you have Helium coverage?
 ![Helium Coverage Lyngby](../figures/helium-coverage-lyngby.png)
 
 - Next time, try in the covered spot in Lyngby. Classroom not working.
+- According to console: sometimes works - have not seen it work on monitor
+- Try either Copenhagen, or by hotspot: Handsome Saffron Hippo
 
-## Using the Heltec microcontroller
+## Using the Heltec microcontroller, init setup
 
 [Heltec quick start](https://docs.heltec.org/en/node/esp32/esp32_general_docs/quick_start.html)
 
@@ -180,9 +184,14 @@ Installing Heltec ESP32 Dev-Boards@2.0.1...
 Installed Heltec ESP32 Dev-Boards@2.0.1
 ```
 
-Result, trying LoRaWAN example: 
+### Testing with Heltec and Helium
+
+- code directory: `heltec-lora-official-library`
+
+Result, trying LoRaWAN example and LoRaWAN-OLED example: 
+
 ```
-❯ arduino-cli compile *.ino && arduino-cli upload *.ino && arduino-cli monitor -p /dev/ttyUSB0 -c 115200
+$ arduino-cli compile *.ino && arduino-cli upload *.ino && arduino-cli monitor -p /dev/ttyUSB0 -c 115200
 /home/snadgh/git/LoraBLE-locationTracker/slave/LoRaWan/LoRaWan.ino: In function 'void setup()':
 /home/snadgh/git/LoraBLE-locationTracker/slave/LoRaWan/LoRaWan.ino:94:13: error: 'HELTEC_BOARD' was not declared in this scope
    Mcu.begin(HELTEC_BOARD,SLOW_CLK_TPYE);
@@ -202,7 +211,11 @@ esp32:esp32   2.0.11  /home/snadgh/.arduino15/packages/esp32/hardware/esp32/2.0.
 Error during build: exit status 1
 ```
 
-### Testing unoffical board
+Not able to compile - tried looking through to check what is missing and defining that is not declared.. resulting in more issues..
+
+### Testing unoffical library
+
+- code directory: `heltec-test`
 
 [github unofficial Heltec library](https://github.com/ropg/Heltec_ESP32_LoRa_v3)
 
@@ -235,6 +248,10 @@ Installed HotButton@0.1.1
 
 Works, it's cool. But does it include Lora stuff?
 
+#### LoRaWan 
+
+- code directory: `heltec-lora-helium`
+
 Btw, both libraries are named `heltec.h`, uninstall the other to try this one, and vice versa.
 
 ```
@@ -258,7 +275,12 @@ Next TX in 10 s
 Deep sleep in 5 s
 ```
 
+More notes to look into, library that is forked:
+[RadioLib](https://github.com/ropg/heltec_esp32_lora_v3?tab=readme-ov-file#radiolib) [notes](https://github.com/jgromes/RadioLib/blob/master/examples/LoRaWAN/LoRaWAN_Starter/notes.md)
+
 ## Testing with Heltec and CIBICOM
+
+- code directory: `heltec-lora-cibicom`
 
 [CIBICOM](https://iotnet.teracom.dk/login)
 
@@ -274,12 +296,113 @@ AppSKey   DE298FC41D1C832ECF5C96C28773B03B
 
 Same thing, fails...
 
+```
+Radio init
+[RadioLib] radio.begin() returned 0 (ERR_NONE)
+Joining
+[RadioLib] node.beginOTAA(joinEUI, devEUI, nwkKey, appKey) returned -6 (ERR_RX_TIMEOUT)
+Next TX in 10 s
+Deep sleep in 5 s
+```
+
+## Testing with RN2483 and CIBICOM
+
+- code directory: `rn2483-lora-cibicom`
+
 Works with RN2483 and the code from week 5.
 
 
-## Testing with 
+# Other notes
 
-[RadioLib](https://github.com/ropg/heltec_esp32_lora_v3?tab=readme-ov-file#radiolib) [notes](https://github.com/jgromes/RadioLib/blob/master/examples/LoRaWAN/LoRaWAN_Starter/notes.md)
+- Heltec: Soldered for HF -> `REGION_EU868 ✔ LORAWAN_REGION=0`
+
+
+```
+$ arduino-cli board details -b esp32:esp32:heltec_wifi_lora_32_V3
+Board name:            Heltec WiFi LoRa 32(V3) / Wireless shell(V3) / Wireless stick lite (V3)
+FQBN:                  esp32:esp32:heltec_wifi_lora_32_V3
+Board version:         2.0.11
+
+Package name:          esp32
+Package maintainer:    Espressif Systems
+Package URL:           https://dl.espressif.com/dl/package_esp32_index.json
+Package website:       https://github.com/espressif/arduino-esp32
+Package online help:   http://esp32.com
+
+Platform name:         esp32
+Platform category:     ESP32
+Platform architecture: esp32
+Platform URL:          https://github.com/espressif/arduino-esp32/releases/download/2.0.11/esp32-2.0.11.zip
+Platform file name:    esp32-2.0.11.zip
+Platform size (bytes): 250401265
+Platform checksum:     SHA-256:d15386308dc72f94816ce80b5508af999f2fd0d88eb5e1ffba48316ab0b9c5d6
+
+Required tool: arduino:dfu-util                  0.11.0-arduino5
+Required tool: esp32:esptool_py                  4.5.1
+Required tool: esp32:mklittlefs                  3.0.0-gnu12-dc7f933
+Required tool: esp32:mkspiffs                    0.2.3
+Required tool: esp32:openocd-esp32               v0.11.0-esp32-20221026
+Required tool: esp32:riscv32-esp-elf-gcc         esp-2021r2-patch5-8.4.0
+Required tool: esp32:riscv32-esp-elf-gdb         11.2_20220823
+Required tool: esp32:xtensa-esp-elf-gdb          11.2_20220823
+Required tool: esp32:xtensa-esp32-elf-gcc        esp-2021r2-patch5-8.4.0
+Required tool: esp32:xtensa-esp32s2-elf-gcc      esp-2021r2-patch5-8.4.0
+Required tool: esp32:xtensa-esp32s3-elf-gcc      esp-2021r2-patch5-8.4.0
+
+Option:        Upload Speed                                              UploadSpeed
+               921600                            ✔                       UploadSpeed=921600
+               115200                                                    UploadSpeed=115200
+               230400                                                    UploadSpeed=230400
+               460800                                                    UploadSpeed=460800
+Option:        CPU Frequency                                             CPUFreq
+               240MHz (WiFi)                     ✔                       CPUFreq=240
+               160MHz (WiFi)                                             CPUFreq=160
+               80MHz (WiFi)                                              CPUFreq=80
+               40MHz                                                     CPUFreq=40
+               20MHz                                                     CPUFreq=20
+               10MHz                                                     CPUFreq=10
+Option:        Core Debug Level                                          DebugLevel
+               None                              ✔                       DebugLevel=none
+               Error                                                     DebugLevel=error
+               Warn                                                      DebugLevel=warn
+               Info                                                      DebugLevel=info
+               Debug                                                     DebugLevel=debug
+               Verbose                                                   DebugLevel=verbose
+Option:        Arduino Runs On                                           LoopCore
+               Core 1                            ✔                       LoopCore=1
+               Core 0                                                    LoopCore=0
+Option:        Events Run On                                             EventsCore
+               Core 1                            ✔                       EventsCore=1
+               Core 0                                                    EventsCore=0
+Option:        Erase All Flash Before Sketch Upload                         EraseFlash
+               Disabled                          ✔                       EraseFlash=none
+               Enabled                                                   EraseFlash=all
+Option:        LoRaWan Region                                            LORAWAN_REGION
+               REGION_EU868                      ✔                       LORAWAN_REGION=0
+               REGION_EU433                                              LORAWAN_REGION=1
+               REGION_CN470                                              LORAWAN_REGION=2
+               REGION_US915                                              LORAWAN_REGION=3
+               REGION_AU915                                              LORAWAN_REGION=4
+               REGION_CN779                                              LORAWAN_REGION=5
+               REGION_AS923                                              LORAWAN_REGION=6
+               REGION_KR920                                              LORAWAN_REGION=7
+               REGION_IN865                                              LORAWAN_REGION=8
+               REGION_US915_HYBRID                                       LORAWAN_REGION=9
+Option:        LoRaWan Debug Level                                       LoRaWanDebugLevel
+               None                              ✔                       LoRaWanDebugLevel=0
+               Freq                                                      LoRaWanDebugLevel=1
+               Freq && DIO                                               LoRaWanDebugLevel=2
+               Freq && DIO && PW                                         LoRaWanDebugLevel=3
+Option:        LoRaWan DevEUI                                            LORAWAN_DEVEUI
+               CUSTOM                            ✔                       LORAWAN_DEVEUI=0
+               Generate By ChipID                                        LORAWAN_DEVEUI=1
+Option:        LoRaWan Preamble Length                                   LORAWAN_PREAMBLE_LENGTH
+               8(default)                        ✔                       LORAWAN_PREAMBLE_LENGTH=0
+               16(For M00 and M00L)                                      LORAWAN_PREAMBLE_LENGTH=1
+Programmers:   ID                                Name
+               esptool                           Esptool
+```
+
 
 
 
