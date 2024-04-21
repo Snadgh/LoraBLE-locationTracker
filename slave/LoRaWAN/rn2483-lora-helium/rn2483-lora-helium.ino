@@ -29,6 +29,7 @@
 #include <rn2xx3.h>          // Needed for certain RN2483 commands
 #include <HardwareSerial.h>  // Hardware UART
 #include <Arduino.h>         // arduino references
+#include <LiquidCrystal_I2C.h> // for the LCD
 
 #define RXD2 16                // RX2 is GPIO16
 #define TXD2 17                // TX2 is GPIO17
@@ -41,11 +42,17 @@ HardwareSerial loraSerial(1);  // UART1
 //and using LoRa WAN
 rn2xx3 myLora(loraSerial);
 
+// set the LCD address
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 // the setup routine runs once when you press reset:
 void setup() {
   // LED pin is GPIO2 which is the ESP8266's built in LED
   pinMode(2, OUTPUT);
   led_on();
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
 
   // Open serial communications and wait for port to open:
   Serial.begin(57600);
@@ -57,6 +64,7 @@ void setup() {
   delay(1000);  //wait for the arduino ide's serial console to open
 
   Serial.println("Startup");
+  lcd.print("Startup..");
 
   initialize_radio();
 
@@ -81,6 +89,10 @@ void initialize_radio() {
   String hweui = myLora.hweui();
   while (hweui.length() != 16) {
     Serial.println("Communication with RN2xx3 unsuccessful. Power cycle the board.");
+    lcd.clear();
+    lcd.print("Unsuccessful..");
+    lcd.setCursor(0, 1);
+    lcd.print("Power Cycle.");
     Serial.println(hweui);
     delay(10000);
     hweui = myLora.hweui();
@@ -94,19 +106,31 @@ void initialize_radio() {
 
   //configure your keys and join the network
   Serial.println("Trying to join Helium");
+  lcd.clear();
+  lcd.print("Joining Helium..");
   bool join_result = false;
 
   const char *appEUI = "6081F98F0D523EDC";
   const char *appKey = "7CF34F4A3DC9A6C611837C5EBD97BBB6";
-  //join_result = myLora.initOTAA(appEUI, appKey);
-  join_result = myLora.initOTAA("6081F98F0D523EDC", "7CF34F4A3DC9A6C611837C5EBD97BBB6");
+  join_result = myLora.initOTAA(appEUI, appKey);
 
+  int i = 0;
   while (!join_result) {
     Serial.println("Unable to join. Are your keys correct, and do you have Helium coverage?");
-    delay(60000);  //delay a minute before retry
+    lcd.setCursor(0, 1);
+    lcd.print("Failed...");
+    delay(30000);  //delay a 30.. before retry
+    lcd.setCursor(0, 0);
+    lcd.print("Trying again:   ");
+    lcd.setCursor(13, 0);
+    lcd.print(++i);
     join_result = myLora.init();
   }
   Serial.println("Successfully joined Helium");
+  lcd.clear();
+  lcd.print("Joining Helium..");
+  lcd.setCursor(0, 1);
+  lcd.print("Success!!");
 }
 
 // the loop routine runs over and over again forever:
@@ -114,12 +138,17 @@ void loop() {
   led_on();
 
   Serial.println("TXing");
+  lcd.clear();
+  lcd.print("TXing");
   myLora.tx("A");  //one byte, blocking function
 
   String rx = myLora.getRx(); // listen to Rx
   if (rx != "") {
     Serial.print("RXing: ");
     Serial.println(rx);
+    lcd.setCursor(0, 1);
+    lcd.print("RXing: ");
+    lcd.print(rx);
   }
 
   led_off();
