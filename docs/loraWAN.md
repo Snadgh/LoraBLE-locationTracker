@@ -403,11 +403,91 @@ Programmers:   ID                                Name
                esptool                           Esptool
 ```
 
+# Testing again Monday Apr 22 
+
+Pick the correct board for the official library:
+
+```yaml
+default_fqbn: Heltec-esp32:esp32:heltec_wifi_lora_32_V3
+default_port: /dev/ttyUSB0
+```
+
+Now it compiles like a charm.
+
+## Cibicom and Heltec 
+
+```
+❯ arduino-cli monitor -p /dev/ttyUSB0 -c 115200
+Monitor port settings:
+baudrate=115200
+Connected to /dev/ttyUSB0! Press CTRL-C to exit.
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3818,len:0x508
+load:0x403c9700,len:0x4
+load:0x403c9704,len:0xad0
+load:0x403cc700,len:0x29d8
+entry 0x403c9880
+
+LoRaWAN EU868 Class A start!
+
++OTAA=1
++Class=A
++ADR=1
++IsTxConfirmed=1
++AppPort=2
++DutyCycle=15000
++ConfirmedNbTrials=4
++ChMask=0000000000000000000000FF
++DevEui=BE7A00000000027D(For OTAA Mode)
++AppEui=BE7A000000001465(For OTAA Mode)
++AppKey=2D0F4D3D8293015A7027F5564C063AD0(For OTAA Mode)
++NwkSKey=0BD22E3C93AA59F3678582DE0D13BABC(For ABP Mode)
++AppSKey=DE298FC41D1C832ECF5C96C28773B03B(For ABP Mode)
++DevAddr=0008AE0D(For ABP Mode)
+
+
+joining...
+joined
+confirmed uplink sending ...
+confirmed uplink sending ...
+confirmed uplink sending ...
+```
+
+Works - screenshot taken
 
 
 
+## Helium and Heltec 
+
+```
+Connected to /dev/ttyUSB0! Press CTRL-C to exit.
+
+LoRaWAN EU868 Class A start!
+
++OTAA=1
++Class=A
++ADR=1
++IsTxConfirmed=1
++AppPort=2
++DutyCycle=15000
++ConfirmedNbTrials=4
++ChMask=0000000000000000000000FF
++DevEui=6081F9CB3A8A03F9(For OTAA Mode)
++AppEui=6081F98F0D523EDC(For OTAA Mode)
++AppKey=B30D4ADC880A9D73A3602E84100876E7(For OTAA Mode)
++NwkSKey=0BD22E3C93AA59F3678582DE0D13BABC(For ABP Mode)
++AppSKey=DE298FC41D1C832ECF5C96C28773B03B(For ABP Mode)
++DevAddr=0008AE0D(For ABP Mode)
 
 
+joining...
+```
+
+The boys took a walk and got connection a little further than Netto.
 
 
 
