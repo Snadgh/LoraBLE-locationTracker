@@ -6,21 +6,6 @@
 #include "WiFi.h"
 #include "LoRaWan_APP.h"
 
-
-bufferData[0] = 0x00;
-bufferData[1] = 0x2a;
-bufferData[2] = 0x10;
-bufferData[3] = 0x1a;
-bufferData[4] = 0xfd;
-bufferData[5] = 0x5e;
-bufferData[6] = 0xcc;
-bufferData[7] = 0x16;
-bufferData[8] = 0x7e;
-bufferData[9] = 0xdd;
-bufferData[10] = 0x94;
-bufferData[11] = 0xbb;
-bufferData[12] = 0x80;
-
 uint8_t devEui[] = { 0x60, 0x81, 0xF9, 0xB5, 0xF5, 0xE0, 0xBE, 0x29 };
 uint8_t appEui[] = { 0x60, 0x81, 0xF9, 0x8F, 0x0D, 0x52, 0x3E, 0xDC }; 
 uint8_t appKey[] = { 0x79, 0xE4, 0xD8, 0x74, 0x98, 0xA4, 0xB8, 0xF3, 0x21, 0x78, 0x36, 0x76, 0xAD, 0xAD, 0x3D, 0xCE };
@@ -85,10 +70,9 @@ static void prepareTxFrame(uint8_t port) {
 	*for example, if use REGION_CN470, 
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
-  appDataSize = 13;
-  for (int i = 0; i < 13; i++) {
-    appData[i] = bufferData[i]
-  }
+  appDataSize = 49;
+  scanNetworks();
+  appData[48] = 0xff;
 
 }
 
@@ -112,27 +96,8 @@ bool checkIfMatches(uint8_t val1, uint8_t val2, uint8_t val3) {
   }
 }
 
-
-void setup()
-{
-    Serial.begin(115200);
-    Mcu.begin(HELTEC_BOARD, SLOW_CLK_TPYE);
-    // Set WiFi to station mode and disconnect from an AP if it was previously connected.
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
-    delay(100);
-    Serial.println("Setup done");
-
-    if (firstrun) {
-    LoRaWAN.displayMcuInit();
-    firstrun = false;
-  }
-}
-
-void loop()
-{
-
-    Serial.println("Scan start");
+void scanNetworks() {
+  Serial.println("Scan start");
     
     // WiFi.scanNetworks will return the number of networks found.
     int n = WiFi.scanNetworks();
@@ -184,6 +149,10 @@ void loop()
     }
     
     for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 6; j++) {
+        appData[i*6+j];
+      }
+      
       Serial.printf("%02X%02X%02X%02X%02X%02X", macList[i][0],macList[i][1],macList[i][2],macList[i][3],macList[i][4],macList[i][5]);
       Serial.println();
     }
@@ -191,7 +160,27 @@ void loop()
 
     // Delete the scan result to free memory for code below.
     WiFi.scanDelete();
+}
 
+
+void setup()
+{
+    Serial.begin(115200);
+    Mcu.begin(HELTEC_BOARD, SLOW_CLK_TPYE);
+    // Set WiFi to station mode and disconnect from an AP if it was previously connected.
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
+    delay(100);
+    Serial.println("Setup done");
+
+    if (firstrun) {
+    LoRaWAN.displayMcuInit();
+    firstrun = false;
+  }
+}
+
+void loop()
+{
     switch (deviceState) {
     case DEVICE_STATE_INIT:
       {
