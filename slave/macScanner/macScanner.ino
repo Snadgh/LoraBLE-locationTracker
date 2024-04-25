@@ -150,7 +150,7 @@ void scanNetworks() {
     
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 6; j++) {
-        appData[i*6+j];
+        appData[i*6+j] = macList[i][j];
       }
       
       Serial.printf("%02X%02X%02X%02X%02X%02X", macList[i][0],macList[i][1],macList[i][2],macList[i][3],macList[i][4],macList[i][5]);
@@ -227,5 +227,5 @@ void loop()
       }
   }
    // Wait a bit before scanning again.
-    delay(10000);
+    //delay(10000);
 }
