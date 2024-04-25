@@ -6,6 +6,21 @@
 #include "WiFi.h"
 #include "LoRaWan_APP.h"
 
+
+bufferData[0] = 0x00;
+bufferData[1] = 0x2a;
+bufferData[2] = 0x10;
+bufferData[3] = 0x1a;
+bufferData[4] = 0xfd;
+bufferData[5] = 0x5e;
+bufferData[6] = 0xcc;
+bufferData[7] = 0x16;
+bufferData[8] = 0x7e;
+bufferData[9] = 0xdd;
+bufferData[10] = 0x94;
+bufferData[11] = 0xbb;
+bufferData[12] = 0x80;
+
 uint8_t devEui[] = { 0x60, 0x81, 0xF9, 0xB5, 0xF5, 0xE0, 0xBE, 0x29 };
 uint8_t appEui[] = { 0x60, 0x81, 0xF9, 0x8F, 0x0D, 0x52, 0x3E, 0xDC }; 
 uint8_t appKey[] = { 0x79, 0xE4, 0xD8, 0x74, 0x98, 0xA4, 0xB8, 0xF3, 0x21, 0x78, 0x36, 0x76, 0xAD, 0xAD, 0x3D, 0xCE };
@@ -71,19 +86,10 @@ static void prepareTxFrame(uint8_t port) {
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
   appDataSize = 13;
-  appData[0] = 0x00;
-  appData[1] = 0x2a;
-  appData[2] = 0x10;
-  appData[3] = 0x1a;
-  appData[4] = 0xfd;
-  appData[5] = 0x5e;
-  appData[6] = 0xcc;
-  appData[7] = 0x16;
-  appData[8] = 0x7e;
-  appData[9] = 0xdd;
-  appData[10] = 0x94;
-  appData[11] = 0xbb;
-  appData[12] = 0x80;
+  for (int i = 0; i < 13; i++) {
+    appData[i] = bufferData[i]
+  }
+
 }
 
 RTC_DATA_ATTR bool firstrun = true;
