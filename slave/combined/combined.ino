@@ -230,6 +230,30 @@ void show_bat(){
   factory_display.display();
 }
 
+//downlink data handle function example
+void downLinkDataHandle(McpsIndication_t *mcpsIndication)
+{
+  Serial.printf("+REV DATA:%s,RXSIZE %d,PORT %d\r\n",mcpsIndication->RxSlot?"RXWIN2":"RXWIN1",mcpsIndication->BufferSize,mcpsIndication->Port);
+  Serial.print("+REV DATA:");
+  for(uint8_t i=0;i<mcpsIndication->BufferSize;i++)
+  {
+    Serial.printf("%02X",mcpsIndication->Buffer[i]);
+    Serial.print("  |  ");
+    if (mcpsIndication->Buffer[i] == 49) {
+      Serial.print("Go beacon mode bro");
+    }
+    else if (mcpsIndication->Buffer[i] == 48) {
+      Serial.println("Cease the beacon sis");
+    }
+  }
+  Serial.println();
+  uint32_t color=mcpsIndication->Buffer[0]<<16|mcpsIndication->Buffer[1]<<8|mcpsIndication->Buffer[2];
+#if(LoraWan_RGB==1)
+  turnOnRGB(color,5000);
+  turnOffRGB();
+#endif
+}
+
 void setup() {
   Serial.begin(115200);
   Mcu.begin(HELTEC_BOARD, SLOW_CLK_TPYE);
@@ -261,14 +285,14 @@ void loop() {
       }
     case DEVICE_STATE_JOIN:
       {
-        show_bat();
+        //show_bat();
         LoRaWAN.displayJoining();
         LoRaWAN.join();
         break;
       }
     case DEVICE_STATE_SEND:
       {
-        show_bat();
+        //show_bat();
         LoRaWAN.displaySending();
         prepareTxFrame(appPort);
         LoRaWAN.send();
@@ -285,7 +309,7 @@ void loop() {
       }
     case DEVICE_STATE_SLEEP:
       {
-        show_bat();
+        //show_bat();
         LoRaWAN.displayAck();
         LoRaWAN.sleep(loraWanClass);
         break;
