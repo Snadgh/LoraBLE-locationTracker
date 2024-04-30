@@ -3,11 +3,40 @@
  *  The API is based on the Arduino WiFi Shield library, but has significant changes as newer WiFi functions are supported.
  *  E.g. the return value of `encryptionType()` different because more modern encryption is supported.
  */
+ 
 #include "WiFi.h"
 #include "LoRaWan_APP.h"
 #include "HT_SSD1306Wire.h"
+#include "sys/time.h"
+#include "Arduino.h"
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+#include <BLEBeacon.h>
+#include "esp_sleep.h"
 #define VBAT_CTRL GPIO_NUM_37
 #define VBAT_ADC GPIO_NUM_1
+#define PRINT true
+
+#define DEVICE_NAME            "Simon"
+#define BEACON_UUID            "e6e9a717-9cc0-4485-8fb1-941f05273c8d"
+#define BEACON_DURATION        10 // seconds
+#define GPIO_DEEP_SLEEP_DURATION 5        // sleep x seconds and then wake up
+RTC_DATA_ATTR static time_t last;         // remember last boot in RTC Memory
+RTC_DATA_ATTR static uint32_t bootcount;  // remember number of boots in RTC Memory
+
+//Here the RTC_DATA_ATTR is defined. Note that if you define a global variable with RTC_DATA_ATTR attribute, the variable will be placed into RTC_SLOW_MEM memory.
+//So the structure declared as RTC_DATA_ATTR and copying the dynamic memory to this structure before a deep sleep helps recovering this into dynamic memory after wake up.
+//In simple words we are saving the time in static memory from dynamic memory to recover it again after a deep sleep. Here the two variables are defined.
+//The ‘last’ is used to get the last time when the ESP32 went to deep sleep and bootcount is used count number of resets.
+
+// See the following for generating UUIDs:
+// https://www.uuidgenerator.net/
+struct timeval now;
+//(may use linux tool uuidgen or random numbers via https://www.uuidgenerator.net/), we randomly generated one
+                                                            //careful, advertised uuid is inversed, bit order is LSB first, meaning that 8d will appear first here
+                                                            //#define ENDIAN_CHANGE_U16(x) ((((x)&0xFF00)>>8) + (((x)&0xFF)<<8)) <-- how it's being done
 
 uint8_t devEui[] = { 0x60, 0x81, 0xF9, 0xB5, 0xF5, 0xE0, 0xBE, 0x29 };
 uint8_t appEui[] = { 0x60, 0x81, 0xF9, 0x8F, 0x0D, 0x52, 0x3E, 0xDC };
@@ -52,6 +81,7 @@ bool overTheAirActivation = true;
 /*ADR enable*/
 bool loraWanAdr = true;
 
+RTC_DATA_ATTR bool beaconMode = false;
 
 /* Indicates if the node is sending confirmed or unconfirmed messages */
 bool isTxConfirmed = true;
@@ -94,7 +124,7 @@ float heltec_vbat() {
   return vbat;
 }
 
-int heltec_battery_percent(float vbat = -1) {
+uint8_t heltec_battery_percent(float vbat = -1) {
   if (vbat == -1) {
     vbat = heltec_vbat();
   }
@@ -120,8 +150,13 @@ static void prepareTxFrame(uint8_t port) {
 	*the max value for different DR can be found in MaxPayloadOfDatarateCN470 refer to DataratesCN470 and BandwidthsCN470 in "RegionCN470.h".
 	*/
   appDataSize = 49;
-  scanNetworks();
-  appData[48] = heltec_battery_percent();
+  if(beaconMode) {
+
+  }
+  else {
+    scanNetworks();
+  }
+  appData[48] = map(heltec_battery_percent(), 0, 100, 0, 255);
 }
 
 RTC_DATA_ATTR bool firstrun = true;
@@ -240,25 +275,59 @@ void downLinkDataHandle(McpsIndication_t *mcpsIndication)
     Serial.printf("%02X",mcpsIndication->Buffer[i]);
     Serial.print("  |  ");
     if (mcpsIndication->Buffer[i] == 49) {
-      Serial.print("Go beacon mode bro");
-    }
-    else if (mcpsIndication->Buffer[i] == 48) {
-      Serial.println("Cease the beacon sis");
+      beaconMode = true;
     }
   }
-  Serial.println();
-  uint32_t color=mcpsIndication->Buffer[0]<<16|mcpsIndication->Buffer[1]<<8|mcpsIndication->Buffer[2];
-#if(LoraWan_RGB==1)
-  turnOnRGB(color,5000);
-  turnOffRGB();
-#endif
+}
+
+void init_beacon() {
+  BLEAdvertising* pAdvertising;
+  pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->setScanFilter(false, true);
+  pAdvertising->stop();
+  // iBeacon
+  BLEBeacon myBeacon;
+  myBeacon.setManufacturerId(0xFFFF);
+  myBeacon.setMajor(1234);
+  myBeacon.setMinor(4321);
+  myBeacon.setSignalPower(-58);
+  myBeacon.setProximityUUID(BLEUUID(BEACON_UUID));
+
+  BLEAdvertisementData advertisementData;
+  advertisementData.setFlags(0x06);
+  advertisementData.setManufacturerData(myBeacon.getData());
+  pAdvertising->setAdvertisementData(advertisementData);
+
+}
+
+void BLEAdvertise() {
+  Serial.println("Address: ");
+  Serial.println(WiFi.macAddress());
+  if (PRINT) Serial.println("Advertizing started...");
+  //if (PRINT) Serial.printf("enter deep sleep\n");
+  //esp_deep_sleep(1000000LL * GPIO_DEEP_SLEEP_DURATION);
+  //if (PRINT) Serial.printf("in deep sleep\n");
 }
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Running setup");
   Mcu.begin(HELTEC_BOARD, SLOW_CLK_TPYE);
   // show battery on display init
   factory_display.init();
+  
+  BLEDevice::init(DEVICE_NAME);
+  init_beacon();
+  gettimeofday(&now, NULL);
+
+  if (PRINT) Serial.printf("start ESP32 %d\n", bootcount++);
+
+  if (PRINT) Serial.printf("deep sleep (%lds since last reset, %lds since last boot)\n", now.tv_sec, now.tv_sec - last);
+
+  last = now.tv_sec;
+  
+
+                // Start advertising
   // Set WiFi to station mode and disconnect from an AP if it was previously connected.
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
@@ -269,15 +338,26 @@ void setup() {
     LoRaWAN.displayMcuInit();
     firstrun = false;
   }
+
+  if (beaconMode) {
+    BLEAdvertising* pAdvertising;
+    pAdvertising = BLEDevice::getAdvertising();
+    pAdvertising->start();
+    BLEAdvertise();
+    unsigned long tempTime = millis();
+    while (millis()-tempTime < BEACON_DURATION*1000) {}
+    beaconMode = false; 
+    pAdvertising->stop();
+  }
 }
 
 void loop() {
   switch (deviceState) {
     case DEVICE_STATE_INIT:
       {
-#if (LORAWAN_DEVEUI_AUTO)
-        LoRaWAN.generateDeveuiByChipID();
-#endif
+        #if (LORAWAN_DEVEUI_AUTO)
+                LoRaWAN.generateDeveuiByChipID();
+        #endif
         LoRaWAN.init(loraWanClass, loraWanRegion);
         //both set join DR and DR when ADR off
         LoRaWAN.setDefaultDR(3);
@@ -320,6 +400,4 @@ void loop() {
         break;
       }
   }
-  // Wait a bit before scanning again.
-  //delay(10000);
 }
