@@ -71,3 +71,6 @@ The Firebase directory contains the `main.py` file, which was deployed to Fireba
 
 ![Firebase response](../docs/figures/basic-answer-server.png)
 
+#### Firebase example
+
+![Contents of database during testing](../docs/figures/db_structure.png)
