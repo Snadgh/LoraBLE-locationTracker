@@ -55,7 +55,7 @@ That script shows how the user can connect via LoRaWAN network, whilst showing t
 
 In this script we simply send a dummy-payload that was used to test the functions in the Helium backend.
 
-Notes can be found in 
+Notes can be found in [docs/loraWAN_notes.md](https://github.com/Snadgh/LoraBLE-locationTracker/blob/master/docs/loraWAN_notes.md).
 
 ### LoRaOLED
 
