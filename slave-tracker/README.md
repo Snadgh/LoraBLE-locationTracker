@@ -69,7 +69,7 @@ This script is a MAC address scanner, again integrated with the `LoRaWAN.ino` sc
 
 The inspiration we got from a `arduino-esp32` example: [WiFiScan.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFi/examples/WiFiScan/WiFiScan.ino)
 
-## Example/Log Output in Serial Monitor
+#### Example/Log Output in Serial Monitor
 
 ```
 Setup done
