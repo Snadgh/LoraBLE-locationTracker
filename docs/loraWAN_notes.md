@@ -201,15 +201,6 @@ Fix: chose the correct board - not `esp32` but the from the official `heltec` li
 
 [CIBICOM](https://iotnet.teracom.dk/login)
 
-```
-Name      BE-7A-00-00-00-00-02-7D
-EUI       BE7A00000000027D
-JoinEUI   BE7A000000001465
-DevAddr   00C8AE0D
-Appkey    2D0F4D3D8293015A7027F5564C063AD0
-NwkSKey   0BD22E3C93AA59F3678582DE0D13BABC
-AppSKey   DE298FC41D1C832ECF5C96C28773B03B
-```
 
 Fails with unofficial library.
 
@@ -323,6 +314,8 @@ Programmers:   ID                                Name
 
 Result: Wrong board selected. Use the official Heltec one.
 
+**Note: Devices have been removed from CIBICOM interface**
+
 # Testing again Monday Apr 22 
 
 Pick the correct board for the official library:
@@ -361,13 +354,13 @@ LoRaWAN EU868 Class A start!
 +AppPort=2
 +DutyCycle=15000
 +ConfirmedNbTrials=4
-+ChMask=0000000000000000000000FF
-+DevEui=BE7A00000000027D(For OTAA Mode)
-+AppEui=BE7A000000001465(For OTAA Mode)
-+AppKey=2D0F4D3D8293015A7027F5564C063AD0(For OTAA Mode)
-+NwkSKey=0BD22E3C93AA59F3678582DE0D13BABC(For ABP Mode)
-+AppSKey=DE298FC41D1C832ECF5C96C28773B03B(For ABP Mode)
-+DevAddr=0008AE0D(For ABP Mode)
++ChMask=
++DevEui=
++AppEui=
++AppKey=
++NwkSKey=
++AppSKey=
++DevAddr=
 
 
 joining...
@@ -378,6 +371,7 @@ confirmed uplink sending ...
 ```
 
 Works - screenshot taken
+
 
 ## Helium and Heltec 
 
@@ -393,13 +387,13 @@ LoRaWAN EU868 Class A start!
 +AppPort=2
 +DutyCycle=15000
 +ConfirmedNbTrials=4
-+ChMask=0000000000000000000000FF
-+DevEui=6081F9CB3A8A03F9(For OTAA Mode)
-+AppEui=6081F98F0D523EDC(For OTAA Mode)
-+AppKey=B30D4ADC880A9D73A3602E84100876E7(For OTAA Mode)
-+NwkSKey=0BD22E3C93AA59F3678582DE0D13BABC(For ABP Mode)
-+AppSKey=DE298FC41D1C832ECF5C96C28773B03B(For ABP Mode)
-+DevAddr=0008AE0D(For ABP Mode)
++ChMask=
++DevEui=
++AppEui=
++AppKey=
++NwkSKey=
++AppSKey=
++DevAddr=
 
 
 joining...
@@ -407,6 +401,9 @@ joining...
 
 The boys took a walk and got connection a little further than Netto.
 
+# Final notes
+
+**Devices have been removed from Helium console and CIBICOM interface**
 
 
 
