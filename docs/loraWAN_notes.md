@@ -6,9 +6,12 @@
 - [Microchip RN2483 command reference user’s guide](https://ww1.microchip.com/downloads/en/DeviceDoc/RN2483-LoRa-Technology-Module-Command-Reference-User-Guide-DS40001784G.pdf)
 
 
-## Hardware
+# Starting with ESP32 and RN2483
 
 Temporarily using RN2483 module until using the LoraWAN microcontroller.
+
+## Hardware
+
 
 | ESP32 | RN2483 |
 | --- | --- |
@@ -118,12 +121,12 @@ Unable to join. Are your keys correct, and do you have Helium coverage?
 - According to console: sometimes works - have not seen it work on monitor
 - Try either Copenhagen, or by hotspot: Handsome Saffron Hippo
 
-## Using the Heltec microcontroller, init setup
+# Using the Heltec LoRa 32 V3 microcontroller
+
 
 [Heltec quick start](https://docs.heltec.org/en/node/esp32/esp32_general_docs/quick_start.html)
 
 Install the last ESP32 package URL: https://resource.heltec.cn/download/package_heltec_esp32_index.json
-
 
 `.arduino15/arduino-cli.yaml`:
 ```yaml
@@ -144,19 +147,8 @@ Downloading index: package_esp32_index.json downloaded
 Downloading index: package_heltec_esp32_index.json downloaded
 ```
 
-Not needed, the board was already in the ESP32 package from previous exercises of the course:
-
+Installing the library and board:
 ```
-$ arduino-cli board listall heltec
-Board Name                                                              FQBN
-Heltec WiFi Kit 32                                                      esp32:esp32:heltec_wifi_kit_32
-Heltec WiFi Kit 32(V3)                                                  esp32:esp32:heltec_wifi_kit_32_V3
-Heltec WiFi LoRa 32                                                     esp32:esp32:heltec_wifi_lora_32
-Heltec WiFi LoRa 32(V2)                                                 esp32:esp32:heltec_wifi_lora_32_V2
-Heltec WiFi LoRa 32(V3) / Wireless shell(V3) / Wireless stick lite (V3) esp32:esp32:heltec_wifi_lora_32_V3
-Heltec Wireless Stick                                                   esp32:esp32:heltec_wireless_stick
-Heltec Wireless Stick Lite                                              esp32:esp32:heltec_wireless_stick_lite
-
 $ arduino-cli lib search heltec | grep Name:
 Name: "Heltec ESP32 Dev-Boards"
 Name: "Heltec ESP8266 Dev-Boards"
@@ -199,84 +191,9 @@ $ arduino-cli compile *.ino && arduino-cli upload *.ino && arduino-cli monitor -
 /home/snadgh/git/LoraBLE-locationTracker/slave/LoRaWan/LoRaWan.ino:94:26: error: 'SLOW_CLK_TPYE' was not declared in this scope
    Mcu.begin(HELTEC_BOARD,SLOW_CLK_TPYE);
                           ^~~~~~~~~~~~~
-
-
-Used library            Version Path
-Heltec ESP32 Dev-Boards 2.0.1   /home/snadgh/Arduino/libraries/Heltec_ESP32_Dev-Boards
-SPI                     2.0.0   /home/snadgh/.arduino15/packages/esp32/hardware/esp32/2.0.11/libraries/SPI
-Wire                    2.0.0   /home/snadgh/.arduino15/packages/esp32/hardware/esp32/2.0.11/libraries/Wire
-
-Used platform Version Path
-esp32:esp32   2.0.11  /home/snadgh/.arduino15/packages/esp32/hardware/esp32/2.0.11
-Error during build: exit status 1
 ```
 
-Not able to compile - tried looking through to check what is missing and defining that is not declared.. resulting in more issues..
-
-### Testing unoffical library
-
-- code directory: `heltec-test`
-
-[github unofficial Heltec library](https://github.com/ropg/Heltec_ESP32_LoRa_v3)
-
-```
-$ arduino-cli lib search Heltec_ESP_32_LoRa_v3
-Downloading index: library_index.tar.bz2 downloaded                                                    
-Name: "Heltec_ESP32_LoRa_v3"
-  Author: Rop Gonggrijp <rop@gonggri.jp>
-  Maintainer: Rop Gonggrijp <rop@gonggri.jp>
-  Sentence: Proper working library for "Heltec ESP32 LoRa v3" and "Heltec Wireless Stick v3" boards.
-  Paragraph: No more frustration, no more puzzling it all together. Everything works. Uses RadioLib.
-  Website: https://github.com/ropg/Heltec_ESP32_LoRa_v3
-  Category: Device Control
-  Architecture: esp32
-  Types: Contributed
-  Versions: [0.2.0, 0.3.0, 0.3.1, 0.3.2, 0.3.3, 0.3.4, 0.4.0, 0.5.0]
-  Provides includes: heltec.h
-  Dependencies: HotButton
-
-$ arduino-cli lib install Heltec_ESP32_LoRa_v3
-Downloading Heltec_ESP32_LoRa_v3@0.5.0...
-Heltec_ESP32_LoRa_v3@0.5.0 downloaded
-Installing Heltec_ESP32_LoRa_v3@0.5.0...
-Installed Heltec_ESP32_LoRa_v3@0.5.0
-Downloading HotButton@0.1.1...
-HotButton@0.1.1 downloaded
-Installing HotButton@0.1.1...
-Installed HotButton@0.1.1
-```
-
-Works, it's cool. But does it include Lora stuff?
-
-#### LoRaWan 
-
-- code directory: `heltec-lora-helium`
-
-Btw, both libraries are named `heltec.h`, uninstall the other to try this one, and vice versa.
-
-```
-$ arduino-cli lib uninstall "Heltec ESP32 Dev-Boards"
-Uninstalling [Heltec ESP32 Dev-Boards@2.0.1]...
-$ arduino-cli lib install Heltec_ESP32_LoRa_v3
-Already installed HotButton@0.1.1
-Downloading Heltec_ESP32_LoRa_v3@0.5.0...
-Heltec_ESP32_LoRa_v3@0.5.0 Heltec_ESP32_LoRa_v3@0.5.0 already downloaded
-Installing Heltec_ESP32_LoRa_v3@0.5.0...
-Installed Heltec_ESP32_LoRa_v3@0.5.0
-```
-
-Results fails:
-```
-Radio init
-[RadioLib] radio.begin() returned 0 (ERR_NONE)
-Joining
-[RadioLib] node.beginOTAA(joinEUI, devEUI, nwkKey, appKey) returned -6 (ERR_RX_TIMEOUT)
-Next TX in 10 s
-Deep sleep in 5 s
-```
-
-More notes to look into, library that is forked:
-[RadioLib](https://github.com/ropg/heltec_esp32_lora_v3?tab=readme-ov-file#radiolib) [notes](https://github.com/jgromes/RadioLib/blob/master/examples/LoRaWAN/LoRaWAN_Starter/notes.md)
+Fix: chose the correct board - not `esp32` but the from the official `heltec` library. 
 
 ## Testing with Heltec and CIBICOM
 
@@ -294,7 +211,7 @@ NwkSKey   0BD22E3C93AA59F3678582DE0D13BABC
 AppSKey   DE298FC41D1C832ECF5C96C28773B03B
 ```
 
-Same thing, fails...
+Fails with unofficial library.
 
 ```
 Radio init
@@ -304,6 +221,8 @@ Joining
 Next TX in 10 s
 Deep sleep in 5 s
 ```
+
+Works with official library.
 
 ## Testing with RN2483 and CIBICOM
 
@@ -315,7 +234,6 @@ Works with RN2483 and the code from week 5.
 # Other notes
 
 - Heltec: Soldered for HF -> `REGION_EU868 ✔ LORAWAN_REGION=0`
-
 
 ```
 $ arduino-cli board details -b esp32:esp32:heltec_wifi_lora_32_V3
@@ -403,6 +321,8 @@ Programmers:   ID                                Name
                esptool                           Esptool
 ```
 
+Result: Wrong board selected. Use the official Heltec one.
+
 # Testing again Monday Apr 22 
 
 Pick the correct board for the official library:
@@ -459,8 +379,6 @@ confirmed uplink sending ...
 
 Works - screenshot taken
 
-
-
 ## Helium and Heltec 
 
 ```
@@ -488,6 +406,8 @@ joining...
 ```
 
 The boys took a walk and got connection a little further than Netto.
+
+
 
 
 
