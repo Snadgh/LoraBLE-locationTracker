@@ -1,3 +1,7 @@
+# Starting with ESP32 and RN2483
+
+Temporarily using RN2483 module until using the LoraWAN microcontroller.
+
 ## Software and documents:
 
 - Account on [Helium LoraWAN network](https://console.helium.com/login)
@@ -5,10 +9,6 @@
 - [Microchip RN2483 datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/50002346C.pdf)
 - [Microchip RN2483 command reference user’s guide](https://ww1.microchip.com/downloads/en/DeviceDoc/RN2483-LoRa-Technology-Module-Command-Reference-User-Guide-DS40001784G.pdf)
 
-
-# Starting with ESP32 and RN2483
-
-Temporarily using RN2483 module until using the LoraWAN microcontroller.
 
 ## Hardware
 
