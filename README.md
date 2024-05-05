@@ -9,7 +9,7 @@ More information on each part and script can be found within each directory.
 
 ## Project Description
 
-The folowing text is taken from our [one-pager document](./docs/IoT_Project_one_pager____34346.pdf):
+The following text is taken from our [one-pager document](./docs/IoT_Project_one_pager____34346.pdf):
 
 > Our objective is to make a local location finder, similarly to the existing AirTags and Tile, to help us find our keys, backpacks or other small items that frequently get lost around the house or larger buildings - almost always during critical times.
 > 
@@ -21,4 +21,5 @@ The folowing text is taken from our [one-pager document](./docs/IoT_Project_one_
 > 
 > Furthermore, the slave will use BLE for precision location while in close proximity. This feature will be enabled on demand via LoRaWAN downlink. Idle mode for the slave will be sleep mode. 
 <!--We will use a tilt sensor and an RTC module to wake up the device either on movement or by time.-->
+
 ![DTU](./docs/figures/dtu.png)
