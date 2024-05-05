@@ -1,4 +1,4 @@
-# LoraBLE-locationTracker
+# Global LoRaWAN Based Geolocation Tracking Device with Local BLE Distance Indicator
 34346 Networking Technologies and Application Development for IoT - Group 4
 
 ![System Architecture](./docs/figures/architecture.jpg)
