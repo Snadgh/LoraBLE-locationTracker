@@ -6,7 +6,7 @@
 ![Web interface](../docs/figures/web-interface.png)
 
 ## User Interface
-
+USE GOOGLE CLOUD SHELL EDITOR WITH THE GEOLOCALISATION TUTORIAL workspace.
 To start a local server at a specific port, use the terminal, move to project folder and enter: 
 
 ```sh
